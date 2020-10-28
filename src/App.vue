@@ -16,5 +16,7 @@ export default class App extends Vue {
 <style lang="stylus">
 @import "./stylus/init"
 
-
+#app
+  height 100%
+  
 </style>

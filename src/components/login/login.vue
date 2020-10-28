@@ -4,13 +4,14 @@
     class="login-form"
     label-position="top"
     label-width="80px"
-    :model="formdata">
+    :model="formdata"
+    :rules="rules">
       <h1>用户登录</h1>
-      <el-form-item label="用户名">
-        <el-input v-model="formdata.username" placeholder="请输入用户名"></el-input>
+      <el-form-item label="用户名" prop="username">
+        <el-input v-model="formdata.username" type="text" placeholder="请输入用户名"></el-input>
       </el-form-item>
-      <el-form-item label="密码">
-        <el-input v-model="formdata.password" placeholder="请输入密码"></el-input>
+      <el-form-item label="密码" prop="password">
+        <el-input v-model="formdata.password" type="password" placeholder="请输入密码"></el-input>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" class="login-btn" @click.prevent="handleLogin">登录</el-button>
@@ -21,7 +22,7 @@
 
 <script lang="ts">
   import { Component, Vue } from "vue-property-decorator"
-  import { Form, FormItem, Input, Button } from 'element-ui'
+  import { Form, FormItem, Input, Button, Message } from 'element-ui'
   import { AxiosResponse } from 'axios'
 
   @Component({
@@ -39,6 +40,17 @@
       password: ""
     }
 
+    private rules: object | undefined = {
+      username: [
+        { required: true, message: "用户名不能为空", trigger: 'blur' },
+        { min: 3, max: 8, message: "长度在3到8个字符", trigger: 'blur' }
+      ],
+      password: [
+        { required: true, message: "密码不能为空", trigger: "blur" },
+        { min: 6, max: 18, message: "长度在6到18个字符", trigger: "blur" }
+      ]
+    }
+
     handleLogin() {
       this.$http.post("login", this.formdata)        
         .then((res: AxiosResponse): void => {
@@ -49,8 +61,10 @@
           } = res.data
 
           if (status == 200) {
-            alert(msg)
+            Message.success(msg)
             this.$router.push({name: "home"})
+          } else if (status == 400) {
+            Message.error(msg)
           }
         })
     }
